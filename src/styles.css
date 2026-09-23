@@ -3,31 +3,27 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-bg-dark: #612D53;
-    --color-btn-dark: #F3F4F4;
+    --color-header-dark: #021526;
+    --color-bg-dark: #172633;
+
+
 }
 
 body {
-    /* @apply bg-[#2C2C2C]; */
-    background-color: white;
+    @apply bg-slate-950;
+    /* background-color: white; */
+    /* background-color: var(--color-bg-dark); */
 }
 
 
 
 @layer utilities {
-    .bg-header-dark {
-        background-color: var(--color-bg-dark);
-        @apply text-white;
+    
+
+    .bg-dark {
+        background-color: var(--color-header-dark);
+        @apply text-slate-100;
     }
 
-    .btn-style-dark {
-        background-color: var(--color-btn-dark);
-        @apply text-black cursor-pointer px-4 py-2;
-    }
-
-    .form-style {
-        & input {
-            @apply border border-slate-800 py-2 px-4 rounded-sm;
-        }
-    }
+    
 }

@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { ChartConfiguration } from 'chart.js';
+import { Chart, ChartConfiguration } from 'chart.js';
 import { getFormattedDate } from "../../../../utils/utils.module";
 import { TransactionService } from '../transaction-service.service';
 
@@ -18,26 +18,67 @@ export class Summary {
 
   data = computed<ChartConfiguration['data']>(() => {
     // 1. Slice the last 5 transactions first to optimize performance
-    const lastFiveTx = this.tx_list().slice(-5);
+    const txDisplayGrp = this.tx_list().sort((a, b) => {
+      const dateA = new Date(a.dateOfPurchase).getTime();
+      const dateB = new Date(b.dateOfPurchase).getTime();
+      return dateA - dateB;
+    }).slice(-5);
 
     return {
       // 2. Map only the sliced items
-      labels: lastFiveTx.map(tx => getFormattedDate(tx.dateOfPurchase)),
+      labels: txDisplayGrp.map(tx => getFormattedDate(tx.dateOfPurchase)),
       datasets: [
         {
           type: 'line',
           label: 'Amount Spent (in ₹)',
-          data: lastFiveTx.map(tx => tx.amountSpent),
-          backgroundColor: '#612d53',
-          borderColor: '#612d53',
+          data: txDisplayGrp.map(tx => tx.amountSpent),
+          backgroundColor: '#612d53', // Light-mode
+          // backgroundColor: 'rgba(129, 140, 248, 0.1)', // Dark-mode
+          borderColor: '#612d53', // Light-mode
+          // borderColor: '#818cf8', // Dark-mode
           borderWidth: 1,
           tension: 0,
-          fill: false
+          fill: false,
         }
       ]
     };
   });
 
+  chartOptions: ChartConfiguration["options"] = {
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        // labels: {
+        //   color: "#f1f5f9"
+        // }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: true,
+          offset: false,
+          // color: "#f1f5f9" // Dark-mode
+        },
+        ticks: {
+          maxTicksLimit: 5,
+          maxRotation: 45,
+          minRotation: 45,
+          padding: 15,
+          // color: "#f1f5f9" // Dark-mode
+        }
+      },
+      // Dark-mode
+      // y: {
+      //   grid: {color: "#f1f5f9"},
+      //   ticks: {color: "#f1f5f9"}
+      // }
+    }
+  };
+
+  
   getCumulativeSum() {
     let cumulativeAmt: number = 0
     for (let i = 0; i < this.tx_list().length; i++) {

@@ -1,6 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { TRANSACTION_LIST } from './dummy-transactions';
 import { TransactionLog } from './transaction.model';
+import { getFormattedDate } from '../../../utils/utils.module';
 
 @Injectable({
   providedIn: 'root',
@@ -16,3 +17,5 @@ export class TransactionService {
   }
 
 }
+
+

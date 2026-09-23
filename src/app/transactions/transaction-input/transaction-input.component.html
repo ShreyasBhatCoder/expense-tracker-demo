@@ -1,28 +1,53 @@
-<form (ngSubmit)="onSubmit(item.value, amount.value)" #form>
+<form class="flex flex-col gap-3" (ngSubmit)="onSubmit(item.value, category.value, date.value, amount.value)" #form>
     <!-- Form Title / Optional Header -->
     <div class="space-y-1">
-        <h3 class="text-lg font-semibold text-slate-900">Log New Expense</h3>
-        <p class="text-xs text-slate-500">Enter details below to update your purchase tracker.</p>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Log New Expense</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Enter details below to update your purchase tracker.</p>
     </div>
 
     <!-- Purchase Item Input Group -->
     <div class="space-y-1.5">
-        <label for="purchase-item" class="text-xs font-semibold text-slate-700 tracking-wide">Purchase Item</label>
+        <label for="purchase-item"
+            class="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide">Purchase Item</label>
         <input type="text" id="purchase-item" name="purchase-item" placeholder="e.g., Wireless Mouse"
-            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
-            required #item/>
+            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/50 outline-none transition-all"
+            required #item />
+    </div>
+
+    <!-- Item Category -->
+    <div class="space-y-1.5">
+        <label for="item-category" class="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide">Item
+            Category</label>
+        <select id="item-category" name="item-category"
+            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/50 outline-none transition-all"
+            #category>
+            <option value="select" disabled selected class="dark:bg-slate-800">-- Select Category --</option>
+            @for(category of categories; track category) {
+            <option [value]="category" class="dark:bg-slate-800">{{ category }}</option>
+            }
+        </select>
+    </div>
+
+    <!-- Date of Purchase -->
+    <div class="space-y-1.5">
+        <label for="date" class="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide">Date of
+            Purchase</label>
+        <input type="date" id="date" name="date"
+            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/50 outline-none transition-all"
+            required #date />
     </div>
 
     <!-- Amount Spent Input Group -->
     <div class="space-y-1.5">
-        <label for="amount-spent" class="text-xs font-semibold text-slate-700 tracking-wide">Amount Spent</label>
+        <label for="amount-spent" class="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide">Amount
+            Spent</label>
         <div class="relative">
             <!-- Currency Symbol Indicator -->
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span class="text-slate-400 text-sm font-medium">₹</span>
+                <span class="text-slate-400 dark:text-slate-500 text-sm font-medium">₹</span>
             </div>
             <input type="number" id="amount-spent" pattern="[0-9]*" min="0" name="amount-spent" placeholder="0.00"
-                class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-indigo-100 outline-none transition-all [appearance:textfield]"
+                class="w-full pl-8 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/50 outline-none transition-all [appearance:textfield]"
                 required #amount />
         </div>
     </div>
@@ -30,11 +55,11 @@
     <!-- Action Buttons Group -->
     <div class="flex items-center gap-3 pt-3">
         <button type="submit"
-            class="flex-1 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm rounded-lg shadow-sm transition-colors cursor-pointer">
+            class="flex-1 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-medium text-sm rounded-lg shadow-sm transition-colors cursor-pointer">
             Submit Expense
         </button>
         <button type="reset"
-            class="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-200 rounded-lg transition-colors cursor-pointer">
+            class="px-4 py-2.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300 font-medium text-sm border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer">
             Reset
         </button>
     </div>
