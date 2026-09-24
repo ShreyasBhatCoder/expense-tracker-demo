@@ -5,14 +5,27 @@
 @theme {
     --color-header-dark: #021526;
     --color-bg-dark: #172633;
-
-
+    --chart-text-color: #1e293b; /* Light mode text */
+    --chart-grid-color: #e2e8f0; /* Light mode grid */
 }
 
-body {
+
+html.dark {
+  --chart-text-color: #f1f5f9; /* Dark mode text */
+  --chart-grid-color: #334155; /* Dark mode grid */
+}
+
+
+@variant dark (&:where(.dark, .dark *));
+
+body.dark {
     @apply bg-slate-950;
     /* background-color: white; */
     /* background-color: var(--color-bg-dark); */
+}
+
+body {
+    @apply bg-white;
 }
 
 

@@ -1,9 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { Chart, ChartConfiguration } from 'chart.js';
-import { getFormattedDate } from "../../../../utils/utils.module";
+import { ChartConfiguration } from 'chart.js';
 import { TransactionService } from '../transaction-service.service';
+import { ThemeService } from '../../theme-service.service';
+import { slice } from '../../../../utils/utils.module';
 
 @Component({
   selector: 'app-summary',
@@ -13,29 +14,35 @@ import { TransactionService } from '../transaction-service.service';
   providers: [provideCharts(withDefaultRegisterables())]
 })
 export class Summary {
+  
   transactionService = inject(TransactionService);
+  themeService = inject(ThemeService);
+  
   tx_list = this.transactionService.transactions;
+  isDark = this.themeService.isDarkMode; // 3. Alias the dark mode signal
 
   data = computed<ChartConfiguration['data']>(() => {
-    // 1. Slice the last 5 transactions first to optimize performance
-    const txDisplayGrp = this.tx_list().sort((a, b) => {
-      const dateA = new Date(a.dateOfPurchase).getTime();
-      const dateB = new Date(b.dateOfPurchase).getTime();
+    const groupedData = this.transactionService.groupByDate(this.tx_list().sort((a, b) => {
+      const dateA = Date.parse(a.dateOfPurchase);
+      const dateB = Date.parse(b.dateOfPurchase);
       return dateA - dateB;
-    }).slice(-5);
+    }));
+    const txDisplayGrp = slice(groupedData, -5);
+    const aggregatedAmt = this.transactionService.aggregateAmtByDate(txDisplayGrp);
+
+    // Dynamic colors based on theme signal status
+    const datasetBgColor = this.isDark() ? 'rgba(129, 140, 248, 0.1)' : 'rgba(97, 45, 83, 0.1)';
+    const datasetBorderColor = this.isDark() ? '#818cf8' : '#612d53';
 
     return {
-      // 2. Map only the sliced items
-      labels: txDisplayGrp.map(tx => getFormattedDate(tx.dateOfPurchase)),
+      labels: Object.keys(aggregatedAmt),
       datasets: [
         {
           type: 'line',
           label: 'Amount Spent (in ₹)',
-          data: txDisplayGrp.map(tx => tx.amountSpent),
-          backgroundColor: '#612d53', // Light-mode
-          // backgroundColor: 'rgba(129, 140, 248, 0.1)', // Dark-mode
-          borderColor: '#612d53', // Light-mode
-          // borderColor: '#818cf8', // Dark-mode
+          data: Object.values(aggregatedAmt),
+          backgroundColor: datasetBgColor,
+          borderColor: datasetBorderColor,
           borderWidth: 1,
           tension: 0,
           fill: false,
@@ -44,51 +51,64 @@ export class Summary {
     };
   });
 
-  chartOptions: ChartConfiguration["options"] = {
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: "top",
-        // labels: {
-        //   color: "#f1f5f9"
-        // }
-      }
-    },
-    scales: {
-      x: {
-        grid: {
+  // 4. Change chartOptions into a reactive computed signal
+    // Change chartOptions into a reactive computed signal with dynamic keys
+  chartOptions = computed<ChartConfiguration["options"]>(() => {
+    const isDarkTheme = this.isDark; // Track dependency
+    const textColor = isDarkTheme() ? "#f1f5f9" : "#1e293b"; 
+    const gridColor = isDarkTheme() ? "rgba(241, 245, 249, 0.15)" : "rgba(30, 41, 59, 0.1)";
+    
+    // Create a dynamic scale ID key string based on the theme state
+    const currentThemeKey = isDarkTheme() ? 'dark' : 'light';
+
+    return {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
           display: true,
-          offset: false,
-          // color: "#f1f5f9" // Dark-mode
-        },
-        ticks: {
-          maxTicksLimit: 5,
-          maxRotation: 45,
-          minRotation: 45,
-          padding: 15,
-          // color: "#f1f5f9" // Dark-mode
+          position: "top",
+          labels: {
+            color: textColor
+          }
         }
       },
-      // Dark-mode
-      // y: {
-      //   grid: {color: "#f1f5f9"},
-      //   ticks: {color: "#f1f5f9"}
-      // }
-    }
-  };
+      scales: {
+        // Adding the key property forces Chart.js to re-render the axis completely
+        x: {
+          key: currentThemeKey, 
+          grid: {
+            display: true,
+            offset: false,
+            color: gridColor
+          },
+          ticks: {
+            maxTicksLimit: 5,
+            maxRotation: 45,
+            minRotation: 45,
+            padding: 15,
+            color: textColor
+          }
+        },
+        y: {
+          key: currentThemeKey,
+          grid: { color: gridColor },
+          ticks: { color: textColor }
+        }
+      }
+    };
+  });
 
-  
-  getCumulativeSum() {
-    let cumulativeAmt: number = 0
+
+  get getCumulativeSum() {
+    let cumulativeAmt: number = 0;
     for (let i = 0; i < this.tx_list().length; i++) {
       cumulativeAmt += this.tx_list()[i].amountSpent;
     }
     return cumulativeAmt;
   }
 
-  averageSpend() {
+  get averageSpend() {
     const list = this.tx_list();
-    return list.length ? Math.round(this.getCumulativeSum() / list.length) : 0;
-  };
+    return list.length ? Math.round(this.getCumulativeSum / list.length) : 0;
+  }
 }
