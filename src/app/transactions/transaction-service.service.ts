@@ -19,7 +19,7 @@ export class TransactionService {
 
   constructor() {
     const getTransactions = localStorage.getItem("transactionsList");
-    if(getTransactions) {
+    if (getTransactions) {
       this.tx_list.set(JSON.parse(getTransactions));
     }
     // effect(() => this.saveChanges());
@@ -36,16 +36,19 @@ export class TransactionService {
     }
   */
 
-  groupByDate(txnList: TransactionLog[]): Record<string, TransactionLog[]> {
+  groupBy(
+    property: keyof TransactionLog,
+    txnList: TransactionLog[]
+  ): Record<string, TransactionLog[]> {
     const newData = txnList.reduce<Record<string, TransactionLog[]>>((accumulator, current) => {
-      const date = getFormattedDate(current.dateOfPurchase);
-      if (!accumulator[date]) {
-        accumulator[date] = [];
+      const propVal = current[property];
+      if (!accumulator[propVal as string]) {
+        accumulator[propVal as string] = [];
       }
-      accumulator[date].push(current);
+      accumulator[propVal as string].push(current);
       return accumulator;
     }, {});
-    console.log(newData);
+    // console.log(newData);
     return newData;
   }
 
@@ -58,14 +61,39 @@ export class TransactionService {
   */
   aggregateAmtByDate(groupedTxList: Record<string, TransactionLog[]>): Record<string, number> {
     let result: Record<string, number> = {};
-    let dates = Object.keys(groupedTxList);
-    for (const date of dates) {
-      result[date] = groupedTxList[date].reduce((acc, current) => acc + current.amountSpent, 0);
+    let keys = Object.keys(groupedTxList);
+    for (const key of keys) {
+      result[key] = groupedTxList[key].reduce((acc, current) => acc + current.amountSpent!, 0);
     }
     return result;
   }
 
-  
+
+  /*
+  [
+    { "date": "2026-09-15", "value": 12000 },
+    { "date": "2026-09-16", "value": 3000 },
+    ...
+  ]
+  */
+
+  transformToObjArray(aggregatedData: Record<string, number>, keyPropName: string, valuePropName: string) {
+    let result: { [key: string]: any }[] = [];
+    let dataKeys = Object.keys(aggregatedData); // Extract actual data keys ("Shopping", etc.)
+
+    for (const dataKey of dataKeys) {
+      result.push({
+        [keyPropName]: dataKey,
+        [valuePropName]: aggregatedData[dataKey]
+      });
+    }
+    return result;
+  }
+
+
+
+
+
 
   private saveChanges() {
     localStorage.setItem('transactionsList', JSON.stringify(this.tx_list()));

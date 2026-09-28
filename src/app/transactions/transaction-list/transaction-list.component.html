@@ -24,14 +24,14 @@
         <!-- Scrollable Body: Matches header widths exactly -->
         <tbody
             class="w-full flex flex-col overflow-y-auto max-h-75 divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
-            @for(log of sortedTxList(); track log.id) {
+            @for(log of sortedTxList(); track log) {
             <tr class="flex w-full hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                 <!-- Matching basis-1/3 classes on cell data blocks -->
                 <td class="basis-1/3 px-6 py-4 text-slate-900 dark:text-slate-200 truncate">{{ log.itemName }}</td>
                 <td class="basis-1/3 px-6 py-4 text-left tabular-nums">{{ log.dateOfPurchase | date: "medium" }}
                 </td>
-                <td class="basis-1/3 px-6 py-4 text-right tabular-nums text-slate-900 dark:text-slate-200">₹{{
-                    log.amountSpent }}</td>
+                <td class="basis-1/3 px-6 py-4 text-right tabular-nums text-slate-900 dark:text-slate-200">
+                    ₹{{ log.amountSpent | addCommas }}</td>
             </tr>
             }
         </tbody>

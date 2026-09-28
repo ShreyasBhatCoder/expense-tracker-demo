@@ -20,12 +20,9 @@
 </div>
 
 <!-- Graph/chart -->
-<div>
-    <!-- Fix: Canvas wrapper container with relative position and strict height constraint -->
-    <div class="relative h-50 w-full">
-        <canvas baseChart [data]="data()" [options]="chartOptions">
-        </canvas>
-    </div>
+<div class="h-64 overflow-y-auto flex flex-col gap-4 pr-1 transparent-scrollbar">
+    <app-line-chart/>
+    <app-pie-chart/>
 </div>
 
 <!-- Prominent Total Display -->
@@ -34,6 +31,6 @@
     <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Total Expense</p>
     <!-- Best Practice: Angular Currency Pipe handles formatting & symbols natively -->
     <span class="font-extrabold text-xl text-indigo-700 dark:text-indigo-400">
-        {{ this.getCumulativeSum | currency:'INR':'symbol':'1.0-0' }}
+        {{ this.getCumulativeSum | currency:'INR' | addCommas  }}
     </span>
 </div>

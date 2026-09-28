@@ -11,31 +11,17 @@ export const transactions: TransactionLog[] = [
   },
   {
     id: 2,
-    itemName: 'Wireless Ergonomic Mouse',
-    itemCategory: "Shopping",
+    itemName: 'Bus Pass',
+    itemCategory: "Transportation",
     amountSpent: 3200,
     dateOfPurchase: new Date('2026-09-16T14:15:00').toString()
   },
   {
     id: 3,
-    itemName: '27-inch 4K Monitor',
-    itemCategory: "Shopping",
-    amountSpent: 28500,
+    itemName: 'SIP',
+    itemCategory: "Financial",
+    amountSpent: 500,
     dateOfPurchase: new Date('2026-09-20T09:00:00').toString()
-  },
-  {
-    id: 4,
-    itemName: 'USB-C Multi-port Hub',
-    itemCategory: "Shopping",
-    amountSpent: 1800,
-    dateOfPurchase: new Date('2026-09-20T16:45:00').toString()
-  },
-  {
-    id: 5,
-    itemName: 'Bus Pass',
-    itemCategory: "Transportation",
-    amountSpent: 2000,
-    dateOfPurchase: new Date('2026-09-17T16:45:00').toString()
   }
 ];
 

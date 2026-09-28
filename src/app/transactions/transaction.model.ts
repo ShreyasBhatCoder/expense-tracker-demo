@@ -6,7 +6,7 @@ export type TransactionLog = {
     id: number;
     itemName: string;
     itemCategory: ItemCategory;
-    amountSpent: number;
+    amountSpent: number | null;
     dateOfPurchase: string;
 }
 

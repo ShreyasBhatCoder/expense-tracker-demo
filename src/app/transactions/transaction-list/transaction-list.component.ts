@@ -1,12 +1,13 @@
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { TRANSACTION_LIST } from '../dummy-transactions';
 import { TransactionLog } from '../transaction.model';
 import { TransactionService } from '../transaction-service.service';
+import { AddCommasPipe } from '../transaction-input/add-commas.pipe';
 
 @Component({
   selector: 'app-transaction-list',
-  imports: [DatePipe],
+  imports: [DatePipe, AddCommasPipe],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.css'
 })

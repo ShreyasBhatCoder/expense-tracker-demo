@@ -81,6 +81,10 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "open": true,
+            "port": 4201
+          },
           "configurations": {
             "production": {
               "buildTarget": "transaction-dashboard:build:production"
