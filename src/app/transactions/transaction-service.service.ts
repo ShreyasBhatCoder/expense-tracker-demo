@@ -1,6 +1,6 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { TRANSACTION_LIST } from './dummy-transactions';
-import { TransactionLog } from './transaction.model';
+import { ItemCategory, TransactionLog } from './transaction.model';
 import { getFormattedDate } from '../../../utils/utils.module';
 
 @Injectable({
@@ -12,7 +12,22 @@ export class TransactionService {
 
   readonly transactions = this.tx_list.asReadonly();
 
-  addNewTransactionLog(txn: TransactionLog) {
+  addNewTransactionLog(input: {
+    purchaseItem: string,
+    itemCategory: ItemCategory,
+    amountSpent: number,
+    dateOfPurchase: string
+  }) {
+    const maxId = this.transactions().reduce((max, t) => t.id > max ? t.id : max, 0);
+    
+    let txn: TransactionLog = {
+      id: maxId + 1,
+      itemName: input.purchaseItem,
+      itemCategory: input.itemCategory,
+      amountSpent: input.amountSpent,
+      dateOfPurchase: input.dateOfPurchase
+    };
+
     this.tx_list.update(txs => [...txs, txn]);
     this.saveChanges();
   }

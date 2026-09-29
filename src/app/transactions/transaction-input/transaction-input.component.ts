@@ -33,15 +33,12 @@ export class TransactionInput {
 
 
   onSubmit() {
-    const lastId = this.transactionService.transactions()[this.transactionService.transactions().length - 1];
-
     this.transactionService.addNewTransactionLog({
-      id: lastId.id + 1,
-      itemName: this.purchaseItem,
+      purchaseItem: this.purchaseItem,
       itemCategory: this.itemCategory as ItemCategory,
-      amountSpent: this.amountSpent,
+      amountSpent: this.amountSpent!,
       dateOfPurchase: this.dateOfPurchase
-    });
+    })
 
     this.onFormReset();
   }

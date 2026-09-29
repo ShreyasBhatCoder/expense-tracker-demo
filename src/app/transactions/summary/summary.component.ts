@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ViewEncapsulation } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 // import { ChartConfiguration } from 'chart.js';
@@ -14,6 +14,8 @@ import { LineChart } from './line-chart/line-chart.component';
   imports: [CurrencyPipe, AddCommasPipe, PieChart, LineChart],
   templateUrl: './summary.component.html',
   styleUrl: './summary.component.css',
+  standalone: true,
+  encapsulation: ViewEncapsulation.None
 })
 export class Summary {
   
