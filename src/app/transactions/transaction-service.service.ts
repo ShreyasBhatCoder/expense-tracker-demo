@@ -1,16 +1,23 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
-import { TRANSACTION_LIST } from './dummy-transactions';
+import { afterEveryRender, effect, inject, Injectable, signal } from '@angular/core';
+// import { TRANSACTION_LIST } from './dummy-transactions';
 import { ItemCategory, TransactionLog } from './transaction.model';
 import { getFormattedDate } from '../../../utils/utils.module';
+import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransactionService {
 
-  private tx_list = signal<TransactionLog[]>(inject(TRANSACTION_LIST));
+  
+  private http = inject(HttpClient);
+  private tx_list = toSignal(this.http.get<TransactionLog[]>('/api'), { initialValue: [] });
 
-  readonly transactions = this.tx_list.asReadonly();
+  readonly transactions = this.tx_list;
+
+  
+
 
   addNewTransactionLog(input: {
     purchaseItem: string,
@@ -28,14 +35,18 @@ export class TransactionService {
       dateOfPurchase: input.dateOfPurchase
     };
 
-    this.tx_list.update(txs => [...txs, txn]);
-    this.saveChanges();
+    // this.tx_list.update(txs => [...txs, txn]);
+    // Add post request to the backend
+    // this.http.post("/api/add", txn).subscribe({
+    //   complete: () => console.log("Added successfully")
+    // })
+    // this.saveChanges();
   }
 
   constructor() {
     const getTransactions = localStorage.getItem("transactionsList");
     if (getTransactions) {
-      this.tx_list.set(JSON.parse(getTransactions));
+      // this.tx_list.set(JSON.parse(getTransactions));
     }
     // effect(() => this.saveChanges());
   }

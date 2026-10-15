@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { TransactionInput } from './transaction-input/transaction-input.component';
 import { TransactionList } from './transaction-list/transaction-list.component';
 import { Summary } from './summary/summary.component';
-import { TRANSACTION_LIST, transactionsListProvider } from './dummy-transactions';
+// import { TRANSACTION_LIST, transactionsListProvider } from './dummy-transactions';
 import { TransactionService } from './transaction-service.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-transactions',
@@ -13,6 +14,6 @@ import { TransactionService } from './transaction-service.service';
   host: {
     class: "flex flex-col gap-4 mb-10"
   },
-  providers: [transactionsListProvider, TransactionService]
+  providers: [TransactionService]
 })
 export class Transactions {}

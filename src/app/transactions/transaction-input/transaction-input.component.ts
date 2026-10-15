@@ -1,53 +1,64 @@
-import { Component, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, viewChild } from '@angular/core';
 import { TransactionService } from '../transaction-service.service';
-import { FormsModule } from '@angular/forms';
-import { CATEGORIES, categoriesListProvider, ItemCategory } from '../transaction.model';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CATEGORIES, categoriesListProvider, ItemCategory, TransactionLog } from '../transaction.model';
 import { getFormattedDate } from '../../../../utils/utils.module';
 import { AddCommasPipe } from './add-commas.pipe';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-transaction-input',
-  imports: [FormsModule, AddCommasPipe],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './transaction-input.component.html',
   styleUrl: './transaction-input.component.css',
-  providers: [categoriesListProvider]
+  providers: [categoriesListProvider, AddCommasPipe]
 })
-export class TransactionInput {
-  transactionService = inject(TransactionService);
+export class TransactionInput implements OnInit {
+
   readonly categories = inject(CATEGORIES);
 
+  private transactionService = inject(TransactionService);
+  private addCommasPipe = inject(AddCommasPipe);
+
+  form = new FormGroup({
+    purchaseItem : new FormControl<string>("", Validators.required),
+    itemCategory: new FormControl<string>("", Validators.required),
+    dateOfPurchase: new FormControl<string>(getFormattedDate(new Date().toISOString()), Validators.required),
+    amountSpent: new FormControl<number | null>(null, Validators.required)
+  })
+
   
-  // Validation rules: purchaseItem, itemCategory, and amountSpent should NOT be empty
-  purchaseItem: string = "";
-  itemCategory: string = "";
-  dateOfPurchase: string = getFormattedDate(new Date().toISOString());
-  amountSpent: number | null = null;
 
-
-
-  onAmountChange(value: string) {
-    const cleanValue = value ? value.replace(/,/g, '') : '';
-    this.amountSpent = cleanValue ? parseFloat(cleanValue) : null;
+  ngOnInit(): void {
+    const amountCtrl = this.form.get("amountSpent");
+    amountCtrl?.valueChanges.subscribe((val) => {
+      if(val) {
+        const formattedValue = this.addCommasPipe.transform(val);
+        amountCtrl.setValue(formattedValue as unknown as number, { emitEvent: false });
+      }
+    });
   }
 
-
-
   onSubmit() {
-    this.transactionService.addNewTransactionLog({
-      purchaseItem: this.purchaseItem,
-      itemCategory: this.itemCategory as ItemCategory,
-      amountSpent: this.amountSpent!,
-      dateOfPurchase: this.dateOfPurchase
-    })
+
+    console.log(this.form.value.dateOfPurchase, this.form.value.amountSpent);
+
+    const newTransaction = {
+      purchaseItem: this.form.value.purchaseItem!,
+      itemCategory: this.form.value.itemCategory as ItemCategory,
+      amountSpent: this.form.value.amountSpent!,
+      dateOfPurchase: this.form.value.dateOfPurchase!,
+    }
+    console.log(newTransaction);
+    this.transactionService.addNewTransactionLog(newTransaction);
+
 
     this.onFormReset();
   }
 
   onFormReset() {
-    this.purchaseItem = "";
-    this.itemCategory = "";
-    this.dateOfPurchase = getFormattedDate(new Date().toISOString());
-    this.amountSpent = null;
+    this.form.reset();
+    this.form.controls.dateOfPurchase.setValue(getFormattedDate(new Date().toISOString()));
   }
 
 }
